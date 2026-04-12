@@ -32,7 +32,7 @@ static size_t write_cb(char *ptr, size_t size, size_t nmemb, void *data)
 
 static int measure_upload(CURL *curl, const char *url, double *speed) 
 {
-    curl_off_t remaining = 50000000;
+    curl_off_t remaining = 500000000;
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Expect:");
 
@@ -43,7 +43,7 @@ static int measure_upload(CURL *curl, const char *url, double *speed)
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE_LARGE, remaining);
     curl_easy_setopt(curl, CURLOPT_READDATA, &remaining);
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 5L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
     CURLcode result = curl_easy_perform(curl);
