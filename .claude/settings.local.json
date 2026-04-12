@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(gcc main.c options.c location.c serverlist.c download.c -o speedtest -lcurl -lcjson -lm)",
-      "WebFetch(domain:speedtest.litnet.lt)"
-    ]
-  }
-}
