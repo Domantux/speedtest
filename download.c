@@ -35,7 +35,7 @@ static int measure_download(CURL *curl, const char *url, double *speed)
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
-    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 7L);
+    curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
 
     CURLcode result = curl_easy_perform(curl);
     if (result != CURLE_OK && result != CURLE_OPERATION_TIMEDOUT) {
@@ -66,7 +66,7 @@ int download_speed(const char url[256], double *speed) {
         return -1;
     }
 
-    snprintf(full_url, sizeof(full_url), "http://%s/download?size=1000000000", url);
+    snprintf(full_url, sizeof(full_url), "http://%s/download?size=2000000000", url);
     if (measure_download(curl, full_url, speed) == 0) {
         curl_easy_cleanup(curl);
         return 0;
