@@ -45,7 +45,7 @@ static cJSON *load_servers(const char *filename) {
 
     size_t len = fread(buffer, sizeof(char), (size_t)file_size, fp);
     if (len != (size_t)file_size) {
-        error_msg = "Trouble reading the file.";
+        error_msg = "Unable to read the file.\n";
         goto cleanup;
     }
     buffer[len] = '\0';
@@ -111,6 +111,7 @@ static int parse_server(const char *country, const char *city, const int server_
     }
 
     int size = cJSON_GetArraySize(json);
+    int count = 0;
 
     for (int i = 0; i < size; i++) {
         cJSON *server_info = cJSON_GetArrayItem(json, i);
@@ -189,12 +190,12 @@ static int copy_arguments_to_struct(char *dest, size_t dest_size, cJSON *src) {
     return 1;
 }
 
-int parse_server_by_id(const int server_number, Server *result) {
-    return parse_server(NULL, NULL, server_number, true, result);
+int parse_server_by_id(const int server_number, Server *results) {
+    return parse_server(NULL, NULL, server_number, true, results);
 }
 
-int parse_server_by_location(const char *country, const char *city, Server *result) {
-    return parse_server(country, city, 0, false, result);
+int parse_server_by_location(const char *country, const char *city, Server *results) {
+    return parse_server(country, city, 0, false, results);
 }
 
     

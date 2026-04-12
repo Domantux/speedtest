@@ -75,4 +75,7 @@ void parse_options(int argc, char* argv[])
                 break;
         }
     }
+    if (!option.uflag && !option.dflag && !option.sflag && !option.lflag && !option.bflag) {
+    option.aflag = true;
+}
 }
