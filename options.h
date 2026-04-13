@@ -3,8 +3,6 @@
 
 #include <stdbool.h>
 
-extern int opt;
-
 typedef struct {
     int srv; 
     bool sflag;
@@ -12,6 +10,7 @@ typedef struct {
     bool uflag; 
     bool dflag; 
     bool bflag;
+    bool aflag;
 } Options;
 
 extern Options option;

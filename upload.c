@@ -32,7 +32,7 @@ static size_t write_cb(char *ptr, size_t size, size_t nmemb, void *data)
 
 static int measure_upload(CURL *curl, const char *url, double *speed) 
 {
-    curl_off_t remaining = 500000000;
+    curl_off_t remaining = 200000000;
     struct curl_slist *headers = NULL;
     headers = curl_slist_append(headers, "Expect:");
 

@@ -89,29 +89,29 @@ static cJSON *load_servers(const char *filename) {
         return NULL;
 }
 
-static int parse_server(const char *country, const char *city, const int server_number, bool search_by_id, Server *result) {
+static int parse_server(const char *country, const char *city, const int server_number, bool search_by_id, Server *results, int max, int *count) {
 
     cJSON *json = NULL;
     const char *error_msg = NULL;
+    Server temp = {0};
 
-    if (result == NULL) 
+    if (results == NULL) 
     {
         return 0;
     }
 
     if ( !search_by_id && (country == NULL || city == NULL)) {
             error_msg = "The city or country is NULL. Server not chosen.";
-            goto cleanup;
+            goto fail_cleanup;
         }
 
     json = load_servers(SERVER_FILE);
     if (json == NULL) {
         error_msg = "Failed to load server list.";
-        goto cleanup;
+        goto fail_cleanup;
     }
 
     int size = cJSON_GetArraySize(json);
-    int count = 0;
 
     for (int i = 0; i < size; i++) {
         cJSON *server_info = cJSON_GetArrayItem(json, i);
@@ -144,23 +144,25 @@ static int parse_server(const char *country, const char *city, const int server_
             }
         }
 
-        if (!copy_arguments_to_struct(result -> country, sizeof(result -> country), Country) ||
-        !copy_arguments_to_struct(result -> city, sizeof(result -> city), City) ||
-        !copy_arguments_to_struct(result -> provider, sizeof(result ->  provider), Provider) ||
-        !copy_arguments_to_struct(result -> host, sizeof(result -> host), Host))
+        if (!copy_arguments_to_struct(temp.country, sizeof(temp.country), Country) ||
+        !copy_arguments_to_struct(temp.city, sizeof(temp.city), City) ||
+        !copy_arguments_to_struct(temp.provider, sizeof(temp.provider), Provider) ||
+        !copy_arguments_to_struct(temp.host, sizeof(temp.host), Host))
         {
             error_msg = "Failed to copy info to the struct";
-            goto cleanup;
+            goto fail_cleanup;
         }
-        result -> id = Id -> valueint;
-
-        cJSON_Delete(json);
-        return 1;
+        temp.id = Id->valueint;
+        
+        results[*count] = temp;
+        (*count)++;
+        if (*count == max) break;
     }
 
-    error_msg = "Matching server was not found.";
+    cJSON_Delete(json);
+    return (*count > 0) ? 1 : 0;
 
-    cleanup:
+    fail_cleanup:
         if (json != NULL) {
             cJSON_Delete(json);
             json = NULL;
@@ -169,7 +171,6 @@ static int parse_server(const char *country, const char *city, const int server_
         if (error_msg != NULL) {
             printf("Error: %s\n", error_msg);
         }
-
         return 0;
 }
 
@@ -191,14 +192,13 @@ static int copy_arguments_to_struct(char *dest, size_t dest_size, cJSON *src) {
 }
 
 int parse_server_by_id(const int server_number, Server *results) {
-    return parse_server(NULL, NULL, server_number, true, results);
+    int count = 0;
+    return parse_server(NULL, NULL, server_number, true, results, 1, &count);
 }
 
-int parse_server_by_location(const char *country, const char *city, Server *results) {
-    return parse_server(country, city, 0, false, results);
+int parse_server_by_location(const char *country, const char *city, Server *results, int max, int *count) {
+    return parse_server(country, city, 0, false, results, max, count);
 }
-
-    
 
 
 

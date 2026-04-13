@@ -8,7 +8,7 @@
 
 #include "options.h"
 
-Options option = {0};
+Options opt = {0};
 
 void print_usage(char *argv0)
 {
@@ -16,7 +16,7 @@ void print_usage(char *argv0)
     printf("    -s <server_number>: choose particular server\n");
     printf("    -u:                 measure upload speed\n");
     printf("    -d:                 measure download speed\n");
-    printf("    -b:                 best server chosen according to the location\n");
+    printf("    -b:                 prints best server according to the location\n");
     printf("    -l:                 prints out your current location\n");
     printf("    -h:                 prints out help window (current window)\n");
     printf("    -v:                 prints out program's version\n");    
@@ -75,7 +75,7 @@ void parse_options(int argc, char* argv[])
                 break;
         }
     }
-    if (!option.uflag && !option.dflag && !option.sflag && !option.lflag && !option.bflag) {
+    if (!option.uflag && !option.dflag) {
     option.aflag = true;
 }
 }

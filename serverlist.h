@@ -9,10 +9,8 @@ typedef struct {
     int id;
 } Server;
 
-extern Server ser;
-
-int parse_server_by_id(const int server_number, Server *result);
-
-int parse_server_by_location(const char *country, const char *city, Server *result);
+int parse_server_by_id(const int server_number, Server *results);
+int parse_server_by_location(const char *country, const char *city, Server *results, int max, int *count);
+   
 
 #endif

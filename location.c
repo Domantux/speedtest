@@ -57,12 +57,12 @@ int find_location(void)
   CURLcode result = curl_easy_perform(curl);
   if (result != CURLE_OK) {
     fprintf(stderr, "curl_easy_perform failed: %s\n", curl_easy_strerror(result));
-    status = 2;
+    status = 1;
     goto cleanup;
   }
 
   if (chunk.response == NULL || parse_location(chunk.response)) {
-    status = 3;
+    status = 1;
     goto cleanup;
   }
 
@@ -86,7 +86,7 @@ static int parse_location(char *raw)
     if (error_ptr != NULL) {
       printf("Error: %s\n", error_ptr);
     }
-    return 4;
+    return 1;
   }
 
   cJSON *Country = cJSON_GetObjectItemCaseSensitive(json, "country");
@@ -95,7 +95,7 @@ static int parse_location(char *raw)
   !cJSON_IsString(City) || (City->valuestring == NULL)) {
     printf("Unable to find the correct objects\n");
     cJSON_Delete(json);
-    return 5;
+    return 1;
   }
   
   new_country = (char *)malloc((strlen(Country->valuestring) + 1) * sizeof(char));
@@ -105,7 +105,7 @@ static int parse_location(char *raw)
     free(new_country);
     free(new_city);
     cJSON_Delete(json);
-    return 6;
+    return 1;
   }
 
   strcpy(new_country, Country -> valuestring);
