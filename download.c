@@ -1,14 +1,7 @@
-#ifdef _MSC_VER
-#ifndef _CRT_SECURE_NO_WARNINGS
-#define _CRT_SECURE_NO_WARNINGS  /* for ctime() */
-#endif
-#endif
- 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-#include <stdbool.h>
- 
+#include <sys/time.h>
+
 #include <curl/curl.h>
 
 #include "download.h"
@@ -23,6 +16,39 @@
 #define JPG_3500  "random3500x3500.jpg"
 #define JPG_4000  "random4000x4000.jpg"
 
+static const curl_off_t total_down_size = 2000000000;
+
+static int xferinfo_callback(void *clientp,
+                            curl_off_t dltotal,
+                            curl_off_t dlnow,
+                            curl_off_t ultotal, 
+                            curl_off_t ulnow)
+{
+    (void)dltotal; (void)ultotal; (void)ulnow;
+
+    struct timeval *start = (struct timeval *)clientp;
+    struct timeval now;
+    gettimeofday(&now, NULL);
+
+    double elapsed = (now.tv_sec - start->tv_sec) + (now.tv_usec - start->tv_usec) / 1000000.0;
+    double total = 15.0;
+    int bar_width = 20;
+    int filled = (int)(elapsed / total * bar_width);
+    if (filled > bar_width) filled = bar_width;
+
+    if (elapsed <= 0) return 0;
+
+    double speed_mbps = (dlnow * 8.0) / (elapsed * 1024 * 1024);
+
+    printf("\r[");
+    for (int i = 0; i < bar_width; i++)
+        printf(i < filled ? "=" : " ");
+    printf("] %.0f/15s  %.1f Mbps", elapsed, speed_mbps);
+    fflush(stdout);
+
+    return 0;
+}
+
 static size_t write_cb(char *ptr, size_t size, size_t nmemb, void *data)
 {
   (void)ptr;
@@ -32,20 +58,28 @@ static size_t write_cb(char *ptr, size_t size, size_t nmemb, void *data)
 
 static int measure_download(CURL *curl, const char *url, double *speed) 
 {
+    struct timeval start;
+    gettimeofday(&start, NULL);
+
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_cb);
     curl_easy_setopt(curl, CURLOPT_USERAGENT, "Mozilla/5.0");
     curl_easy_setopt(curl, CURLOPT_TIMEOUT, 15L);
+    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+    curl_easy_setopt(curl, CURLOPT_XFERINFODATA, &start);
+    curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, xferinfo_callback);
 
+    printf("Download test has started. Please wait\n");
     CURLcode result = curl_easy_perform(curl);
     if (result != CURLE_OK && result != CURLE_OPERATION_TIMEDOUT) {
         return -1;
     }
+    printf("\n");
 
     long response_code = 0;
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     if (response_code != 200) {
-        printf("curl result: %s, response: %ld\n", curl_easy_strerror(result), response_code);
+        fprintf(stderr, "curl result: %s, response: %ld\n", curl_easy_strerror(result), response_code);
         return -1;
     }
 
@@ -66,7 +100,7 @@ int download_speed(const char url[256], double *speed) {
         return -1;
     }
 
-    snprintf(full_url, sizeof(full_url), "http://%s/download?size=2000000000", url);
+    snprintf(full_url, sizeof(full_url), "http://%s/download?size=%ld", url, total_down_size);
     if (measure_download(curl, full_url, speed) == 0) {
         curl_easy_cleanup(curl);
         return 0;

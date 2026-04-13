@@ -84,7 +84,7 @@ static int parse_location(char *raw)
   if (json == NULL) {
     const char *error_ptr = cJSON_GetErrorPtr();
     if (error_ptr != NULL) {
-      printf("Error: %s\n", error_ptr);
+      fprintf(stderr, "Error: %s\n", error_ptr);
     }
     return 1;
   }
@@ -93,7 +93,7 @@ static int parse_location(char *raw)
   cJSON *City = cJSON_GetObjectItemCaseSensitive(json, "city");
   if (!cJSON_IsString(Country) || (Country->valuestring == NULL) || 
   !cJSON_IsString(City) || (City->valuestring == NULL)) {
-    printf("Unable to find the correct objects\n");
+    fprintf(stderr, "Unable to find the correct objects\n");
     cJSON_Delete(json);
     return 1;
   }
@@ -101,7 +101,7 @@ static int parse_location(char *raw)
   new_country = (char *)malloc((strlen(Country->valuestring) + 1) * sizeof(char));
   new_city = (char *)malloc((strlen(City->valuestring) + 1) * sizeof(char));
   if (new_country == NULL || new_city == NULL) {
-    printf("Error: Unable to alocate the memory.\n");
+    fprintf(stderr, "Error: Unable to alocate the memory.\n");
     free(new_country);
     free(new_city);
     cJSON_Delete(json);

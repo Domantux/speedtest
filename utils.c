@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <float.h>
 #include <sys/time.h>
 
 #include <curl/curl.h>
@@ -19,7 +18,7 @@ static size_t write_cb(char *ptr, size_t size, size_t nmemb, void *data)
 
 static double calc_past_time(struct timeval* start, struct timeval* end)
 {
-    return (end->tv_sec - start->tv_sec) * 1000 + (end->tv_usec - start->tv_usec)/1000;
+    return (end->tv_sec - start->tv_sec) * 1000 + (end->tv_usec - start->tv_usec)/1000.0;
 }
 
 
@@ -39,7 +38,6 @@ static int measure_latency(CURL *curl, char *url)
     result = curl_easy_perform(curl);
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
     if (result != CURLE_OK || response_code != 200) {
-        printf("curl result: %s, response: %ld\n", curl_easy_strerror(result), response_code);
         return -1;
     }
 
@@ -53,7 +51,7 @@ int check_latency(char *url, double *elapsed)
 
     curl = curl_easy_init();
     if(!curl) {
-        printf("Failed to initialize curl.\n");
+        fprintf(stderr, "Failed to initialize curl.\n");
         return -1;
     }
 

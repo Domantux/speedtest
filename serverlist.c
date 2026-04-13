@@ -56,7 +56,7 @@ static cJSON *load_servers(const char *filename) {
     if (json == NULL) {
         const char *error_ptr = cJSON_GetErrorPtr();
         if (error_ptr != NULL) {
-            printf("Error: %s\n", error_ptr);
+            fprintf(stderr, "Error: %s\n", error_ptr);
         }
         goto cleanup;
     }
@@ -72,7 +72,7 @@ static cJSON *load_servers(const char *filename) {
 
     cleanup:
         if (error_msg != NULL) {
-            printf("Error: %s\n", error_msg);
+            fprintf(stderr, "Error: %s\n", error_msg);
         }
         if (fp != NULL) {
             fclose(fp);
@@ -169,7 +169,7 @@ static int parse_server(const char *country, const char *city, const int server_
         }
 
         if (error_msg != NULL) {
-            printf("Error: %s\n", error_msg);
+            fprintf(stderr, "Error: %s\n", error_msg);
         }
         return 0;
 }

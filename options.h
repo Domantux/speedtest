@@ -13,7 +13,7 @@ typedef struct {
     bool aflag;
 } Options;
 
-extern Options option;
+extern Options opts;
 
 void print_usage(char *argv0);
 

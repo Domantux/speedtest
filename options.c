@@ -8,7 +8,7 @@
 
 #include "options.h"
 
-Options opt = {0};
+Options opts = {0};
 
 void print_usage(char *argv0)
 {
@@ -35,27 +35,27 @@ void parse_options(int argc, char* argv[])
             case 's':
                 long val = strtol(optarg, &endptr, 10);
                 if(errno != 0 || endptr == optarg || *endptr != '\0') {
-                        printf("Invalid server number");
+                        printf("Invalid server number.\n");
                         exit(1);
                 }
-                option.srv = (int)val; 
-                option.sflag = true;
+                opts.srv = (int)val; 
+                opts.sflag = true;
                 break;
 
             case 'l':
-                option.lflag = true;
+                opts.lflag = true;
                 break;
 
             case 'u':
-                option.uflag = true;
+                opts.uflag = true;
                 break;
 
             case 'd':
-                option.dflag = true;
+                opts.dflag = true;
                 break;
 
             case 'b':
-                option.bflag = true;
+                opts.bflag = true;
                 break;
 
             case 'h':
@@ -75,7 +75,7 @@ void parse_options(int argc, char* argv[])
                 break;
         }
     }
-    if (!option.uflag && !option.dflag) {
-    option.aflag = true;
-}
+    if (!opts.uflag && !opts.dflag && !opts.sflag && !opts.lflag && !opts.bflag) {
+        opts.aflag = true;
+    }
 }
