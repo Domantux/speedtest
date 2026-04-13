@@ -15,7 +15,6 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
-
 %.o: %.c $(DEPS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
