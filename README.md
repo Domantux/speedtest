@@ -82,3 +82,7 @@ Upload test has started. Please wait
 [====================] 15s  95.3 Mbps
 Upload speed: 95.30 Mbps
 ```
+
+## License
+
+MIT
